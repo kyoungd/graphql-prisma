@@ -37,46 +37,48 @@ const prisma = new Prisma({
 //   console.log(err);
 // })
 
-const createPostUser = async ( authorId, data ) => {
-  const userExists = await prisma.exists.User({id: authorId});
-  if (!userExists) {
-    throw new Error('User is not found')
-  }
-  const post = await prisma.mutation.createPost({
-    data: {
-      ...data,
-      author: {
-        connect: {
-          id: authorId
-        }
-      }
-    }
-  }, '{id}');
-  const user = await prisma.query.user({
-    where: {
-      id: authorId
-    }
-  }, '{id name email posts { id title published }}')
-  return user;
-}
+// const createPostUser = async ( authorId, data ) => {
+//   const userExists = await prisma.exists.User({id: authorId});
+//   if (!userExists) {
+//     throw new Error('User is not found')
+//   }
+//   const post = await prisma.mutation.createPost({
+//     data: {
+//       ...data,
+//       author: {
+//         connect: {
+//           id: authorId
+//         }
+//       }
+//     }
+//   }, '{id}');
+//   const user = await prisma.query.user({
+//     where: {
+//       id: authorId
+//     }
+//   }, '{id name email posts { id title published }}')
+//   return user;
+// }
 
-createPostUser('cju02hu7c001u089051ido8w1', {
-  title: "Thanks for all the fish",
-  body: "a great book of a cosmic scale",
-  published: true,
-  author: {
-    connect: {
-      id: "cju02hu7c001u089051ido8w1"
-    }
-  }
-}).then(data => {
-  console.log(data)
-}).catch (err => {
-  console.log(err);
-});
+// createPostUser('cju02hu7c001u089051ido8w1', {
+//   title: "Thanks for all the fish",
+//   body: "a great book of a cosmic scale",
+//   published: true,
+//   author: {
+//     connect: {
+//       id: "cju02hu7c001u089051ido8w1"
+//     }
+//   }
+// }).then(data => {
+//   console.log(data)
+// }).catch (err => {
+//   console.log(err);
+// });
 
 // prisma.exists.Comment({
 //   id: "cju035dft002k0890kmslyllk"
 // }).then(exists => {
 //   console.log(exists);
 // })
+
+export { prisma as default }

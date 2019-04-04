@@ -6,7 +6,7 @@ import Comment from './resolvers/Comment';
 import Post from './resolvers/Post';
 import User from './resolvers/User';
 import Subscription from './resolvers/Subscription';
-import './prisma';
+import prisma from './prisma';
 
 // Scalr types = String, Boolean, Int, Float, ID
 
@@ -26,7 +26,8 @@ const servers = new GraphQLServer({
   },
   context: {
     db,
-    pubsub
+    pubsub,
+    prisma
   }
 });
 

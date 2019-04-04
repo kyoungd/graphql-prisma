@@ -90,3 +90,11 @@ npm install graphql-cli@2.16.4
     "get-schema": "graphql get-schema -p prisma"
 npm run get-schema
 npm start
+
+
+* create another prisma folder
+* in the prisma yml file, the last two directory is the name of the schema and project.  reviews/dev or reviews/qa
+* the if there is nothing there, it is set to default/default
+endpoint: http://192.168.99.101:4466/reviews/default
+* graphql site address
+http://192.168.99.101:4466/reviews/default
