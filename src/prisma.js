@@ -2,7 +2,8 @@ import { Prisma } from 'prisma-binding'
 
 const prisma = new Prisma({
   typeDefs: './src/generated/prisma.graphql',   // path to the generated file, .graphqlconfig
-  endpoint: 'http://192.168.99.101:4466'
+  endpoint: 'http://192.168.99.101:4466',
+  secret: "cju02yv7faa2f0890ebmk64mi"
 })
 
 // prisma.query primsa.mutation prisma.subscription prisma.exists

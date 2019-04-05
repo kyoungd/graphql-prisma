@@ -98,3 +98,30 @@ npm start
 endpoint: http://192.168.99.101:4466/reviews/default
 * graphql site address
 http://192.168.99.101:4466/reviews/default
+
+secure prisma server
+./prisma/prisma.yml (add the following)
+secret: cju02yv7faa2f0890ebmk64mi
+cd prisma
+prismay deploy
+./src/prismajs (add the following)
+secret: "cju02yv7faa2f0890ebmk64mi"
+
+Make the local playground function despite locking down prisma server
+In the Graphql Playground, HTTP HEADERS (bottom left)
+{
+  "Authorization": "Bearer {TOKEN}"
+}
+cd prisma
+prisma token
+-- copy the token into {TOKEN}
+
+* Delete existing database
+primsa delete
+* reploy schema
+primsa deploy
+* by adding this, we can run "npm run get-schema"
+        "prisma": "prisma/prisma.yml",
+* generate a new schema file
+npm get-schema
+
