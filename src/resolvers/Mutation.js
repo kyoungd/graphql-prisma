@@ -1,15 +1,47 @@
-import uuidv4 from 'uuid/v4';
-import { pubsubPostName, pubsubCommentName } from '../util';
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import config from "../../config";
 
 const Mutation = {
-  async createUser(parent, args, { db, prisma }, info) {
-    const isEmailTaken = await prisma.exists.User({email: args.data.email});
-    if (isEmailTaken) {
-      throw new Error('Email taken.');
+  async loginUser(parent, args, {prisma}, info) {
+    const user = await prisma.query.user({ 
+      where: {
+        email: args.data.email
+        } 
+    });
+    if (!user)
+      throw new Error ('username and password does not match');
+    const isMatch = await bcrypt.compare(args.data.password, user.password);
+    const errMsg = "text"
+    if (isMatch) {
+      return {
+        user:user,
+        token: jwt.sign({userId: user.id}, config.secret)
+      }
     }
+    else
+      throw new Error (errMsg + 'Username and password does not match');
+  },
+  async createUser(parent, args, { db, prisma }, info) {
+    if (args.data.password.length < 8) {
+      throw new Error('Password must be 8 characters or longer');
+    }
+    const password = await bcrypt.hash(args.data.password, config.saltRound);
     // info is the return selection information
-    return prisma.mutation.createUser({ data: args.data }, info);
-
+    const user = prisma.mutation.createUser({ 
+      data: {
+        ...args.data,
+        password
+      }
+    // }, info);  // remove info when returning custom data instead of returning prisma data
+    });
+    // this will make all fields scalar data type.npm
+    // return user;
+   
+    return {
+      user,
+      token: jwt.sign({userId: user.id}, config.secret)
+    }
   },
   async deleteUser(parent, args, { db, prisma }, info) {
     const isUserExist = await prisma.exists.User({id: args.id});

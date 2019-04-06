@@ -125,3 +125,6 @@ primsa deploy
 * generate a new schema file
 npm get-schema
 
+npm uninstall uuid
+npm install bcryptjs@2.4.3
+npm install jsonwebtoken@8.3.0
