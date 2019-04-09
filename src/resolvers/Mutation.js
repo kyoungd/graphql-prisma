@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import config from "../../config";
-import { makeToken, getUserId } from "../utils/jwtToken";
+import { makeToken, getUserId, hashPassword } from "../utils/jwtToken";
 
 const Mutation = {
   async loginUser(parent, args, {prisma}, info) {
@@ -27,7 +27,8 @@ const Mutation = {
     if (args.data.password.length < 8) {
       throw new Error('Password must be 8 characters or longer');
     }
-    const password = await bcrypt.hash(args.data.password, config.saltRound);
+
+    const password = await hashPassword(args.data.password);
     // info is the return selection information
     const user = prisma.mutation.createUser({ 
       data: {
@@ -81,7 +82,12 @@ const Mutation = {
     })
     if (!postExists)
       throw new Error ("User does not own the post");
-    return prisma.mutation.updatePost({where: { id: args.id }, data: args.data}, info)
+    if (!args.data.published) {
+      const isCommentExist = await prisma.exists.comments({where: {post: {id: args.id}}});
+      if (isCommentExist)
+        prisma.mutation.deleteManyComments({where: {post: {id: args.id}}});
+    }
+    return await prisma.mutation.updatePost({where: { id: args.id }, data: args.data}, info)
   },
   async deletePost(parent, args, { pubsub, request }, info) {
     const userId = getUesrId(request);
@@ -95,7 +101,16 @@ const Mutation = {
       throw new Error ("User does not own the post");
     return prisma.mutation.deletePost({where: {id: args.id}}, info );
   },
-  createComment(parent, args, { db, pubsub, prisma, request }, info) {
+  async createComment(parent, args, { db, pubsub, prisma, request }, info) {
+    const postId = args.data.post;
+    const post = await prisma.query.post({
+      where: {
+        id: postId
+      }
+    });
+    console.log(post);
+    if (!post.published)
+      throw new Error('Post is not published');
     const userId = getUserId(request);
     return prisma.mutation.createComment({
       data: {
@@ -145,6 +160,16 @@ const Mutation = {
         id: args.id
       }
     });
+  },
+  async changePassword(parent, args, {prisma, request}, info) {
+    const userId = getUserId(request);
+    const oldUser = await prisma.query.user({where: {id: userId}});
+    oldUser.password = await hashPassword(args.password);
+    const user = await prisma.mutation.updateUser({
+      where: { id: userId },
+      data : { password: oldUser.password }
+    })
+    return user.password;
   }
 }
 

@@ -4,15 +4,21 @@ const Query = {
   users(parent, args, { db, prisma }, info) {
     // opArgs.  Which operation does it support?
     // look under the shcema in the graphql browser for users: where, orderBy, skip, after, ...
-    const opArgs = {}
+    const opArgs = {
+      first: args.first,
+      skip: args.skip,
+      after: args.after,
+      orderBy: args.orderBy
+    }
     if (args.query) {
       opArgs.where = {
+        name_contains: args.query
         // name_contains: args.query
-        OR: [{
-          name_contains: args.query
-        }, {
-          email_contains: args.query
-        }]
+        // OR: [{
+        //   name_contains: args.query
+        // }, {
+        //   email_contains: args.query
+        // }]
       }
     }
 
@@ -32,7 +38,12 @@ const Query = {
     return prisma.query.user({where: {id: userId}});
   },
   posts(parent, args, { db, prisma, request }, info) {
-    const opArgs = {}
+    const opArgs = {
+      first: args.first,
+      skip: args.skip,
+      after: args.after,
+      orderBy: args.orderBy
+    }
     const userId = getUserId(request, false);
     if (userId)
       opArgs.where = {
@@ -83,7 +94,12 @@ const Query = {
     return posts[0];
   },
   comments(parent, args, { db, prisma }, info) {
-    const opArgs = {}
+    const opArgs = {
+      first: args.first,
+      skip: args.skip,
+      after: args.after,
+      orderBy: args.orderBy
+    }
     if (args.query) {
       opArgs.where = {
         text_contains: args.query

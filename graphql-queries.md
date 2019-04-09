@@ -111,6 +111,17 @@ subscription {
   }
 }
 
+subscription {
+  post(userId: "") {
+    mutation
+    node {
+      id
+      title
+      published
+    }
+  }
+}
+
 mutation {
   updatePost (id: "cju2tt0zt000j0890pilkgor1", data: {
     body: "is this book the greatest sci-fi ever?  Yes."
@@ -174,5 +185,52 @@ mutation {
   deleteComment(id: "cju8ojw30001m0890x838s7z3") {
     id
     text
+  }
+}
+
+* fragemnents
+query {
+  users {
+    ...userFields
+  }
+}
+
+fragment userFields on User {
+	id
+	name
+  email
+  posts {
+    id
+    title
+  }
+}
+
+query {
+  posts (
+    first: 2
+  	skip: 2
+    after: "cju8q42ht002j0890wnw7khn0"
+  ) {
+    id
+    title
+    body
+    published
+    author {
+      id
+      name
+    }
+  }
+}
+
+
+query {
+  users (orderBy: createdAt_ASC) {
+    name
+    email
+    posts {
+      id
+      title
+      published
+    }
   }
 }
