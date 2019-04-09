@@ -1,22 +1,23 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import config from "../../config";
+import { makeToken, getUserId } from "../utils/jwtToken";
 
 const Mutation = {
   async loginUser(parent, args, {prisma}, info) {
-    const user = await prisma.query.user({ 
+    const users = await prisma.query.users({ 
       where: {
         email: args.data.email
         } 
     });
-    if (!user)
+    if (!users)
       throw new Error ('username and password does not match');
+    const user = users[0];
     const isMatch = await bcrypt.compare(args.data.password, user.password);
     const errMsg = "text"
     if (isMatch) {
       return {
         user:user,
-        token: jwt.sign({userId: user.id}, config.secret)
+        token: makeToken(user.id)
       }
     }
     else
@@ -40,28 +41,23 @@ const Mutation = {
    
     return {
       user,
-      token: jwt.sign({userId: user.id}, config.secret)
+      token: makeToken(user.id)
     }
   },
-  async deleteUser(parent, args, { db, prisma }, info) {
-    const isUserExist = await prisma.exists.User({id: args.id});
-    if (!isUserExist) {
-      throw new Error('This user does not exist');
-    }
+  async deleteUser(parent, args, { prisma, request }, info) {
+    const userId = getUserId(request);
     return prisma.mutation.deleteUser( { where: {
-      id: args.id} }, info );
+      id: userId} }, info );
   },
-  async updateUser(parent, args, { db, prisma }, info) {
-    const isUserExist = await prisma.exists.User({id: args.id});
-    if (!isUserExist) {
-      throw new Error('This user does not exist');
-    }
-    return prisma.mutation.updateUser( { where: {
-      id: args.id },
+  async updateUser(parent, args, { prisma, request }, info) {
+    const userId = getUserId(request);
+    return prisma.mutation.updateUser( { where: 
+      { id: userId },
       data: args.data
     }, info);
   },
-  createPost(parent, args, { db, pubsub, prisma }, info) {
+  createPost(parent, args, { prisma, request }, info) {
+    const userId = getUserId(request);
     return prisma.mutation.createPost( {
       data: {
         title: args.data.title,
@@ -69,25 +65,44 @@ const Mutation = {
         published: args.data.published,
         author: {
           connect: {
-            id: args.data.author
+            id: userId
           }
         }
       }
     }, info);
   },
-  updatePost(parent, args, { db, pubsub, prisma }, info) {
+  async updatePost(parent, args, { db, pubsub, prisma, request }, info) {
+    const userId = getUserId(request);
+    const postExists = await prisma.exists.Post({
+      id: args.id,
+      author: {
+        id: userId
+      }
+    })
+    if (!postExists)
+      throw new Error ("User does not own the post");
     return prisma.mutation.updatePost({where: { id: args.id }, data: args.data}, info)
   },
-  deletePost(parent, args, { db, pubsub }, info) {
+  async deletePost(parent, args, { pubsub, request }, info) {
+    const userId = getUesrId(request);
+    const postExists = await prisma.exists.Post({
+      id: args.id,
+      author: {
+        id: userId
+      }
+    })
+    if (!postExists)
+      throw new Error ("User does not own the post");
     return prisma.mutation.deletePost({where: {id: args.id}}, info );
   },
-  createComment(parent, args, { db, pubsub, prisma }, info) {
+  createComment(parent, args, { db, pubsub, prisma, request }, info) {
+    const userId = getUserId(request);
     return prisma.mutation.createComment({
       data: {
         text: args.data.text,
         author: {
           connect: {
-            id: args.data.author
+            id: userId
           }
         },
         post: {
@@ -98,7 +113,16 @@ const Mutation = {
       }
     }, info);
   },
-  updateComment(parent, args, { db, prisma }, info) {
+  async updateComment(parent, args, { pubsub, prisma, request }, info) {
+    const userId = getUserId(request);
+    const isCommentExist = prisma.exists.Comment({
+      id: args.id,
+      author: {
+        id: userId
+      }
+    });
+    if (!isCommentExist)
+      throw new Error("Comment access authentication denied")
     return prisma.mutation.updateComment({
       where: {
         id: args.id
@@ -106,7 +130,16 @@ const Mutation = {
       data: args.data
     }, info);
   },
-  deleteComment(parent, args, { db, prisma }, info) {
+  deleteComment(parent, args, { db, prisma, request }, info) {
+    const userId = getUserId(request);
+    const isCommentExist = prisma.exists.Comment({
+      id: args.id,
+      author: {
+        id: userId
+      }
+    });
+    if (!isCommentExist)
+      throw new Error("Comment access authentication denied")
     return prisma.mutation.deleteComment({
       where: {
         id: args.id

@@ -112,6 +112,7 @@ In the Graphql Playground, HTTP HEADERS (bottom left)
 {
   "Authorization": "Bearer {TOKEN}"
 }
+* how to get {TOKEN}
 cd prisma
 prisma token
 -- copy the token into {TOKEN}
@@ -128,3 +129,9 @@ npm get-schema
 npm uninstall uuid
 npm install bcryptjs@2.4.3
 npm install jsonwebtoken@8.3.0
+
+* Authorization schema - HTTP Header
+{
+  "Authorization":"Bearer {LOGIN-TOKEN} 
+}
+* Retrieve login token by executing a mutation.loginUser.

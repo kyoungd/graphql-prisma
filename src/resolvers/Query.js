@@ -1,3 +1,5 @@
+import { makeToken, getUserId } from "../utils/jwtToken";
+
 const Query = {
   users(parent, args, { db, prisma }, info) {
     // opArgs.  Which operation does it support?
@@ -25,23 +27,29 @@ const Query = {
     //   return user.name.toLowerCase().includes(args.query.toLowerCase())
     // });
   },
-  me(parent, args, { db }, info) {
-    return {
-      id: '123098',
-      name: 'Jim',
-      email: 'jim@email.com'
-    }
+  me(parent, args, { db, prisma, request }, info) {
+    const userId = getUserId(request);
+    return prisma.query.user({where: {id: userId}});
   },
-  posts(parent, args, { db, prisma }, info) {
-    const opArgs = {};
-    if (args.query) {
+  posts(parent, args, { db, prisma, request }, info) {
+    const opArgs = {}
+    const userId = getUserId(request, false);
+    if (userId)
       opArgs.where = {
-        OR: [{
+        author: {
+          id: userId
+        }
+      };
+    else
+      opArgs.where = {
+        published: true
+      };
+    if (args.query) {
+      opArgs.where.OR = [{
           title_contains: args.query
         }, {
           body_contains: args.query
         }]
-      }
     }
     // second parameter can be null, string or object;
     // info - it has original information of the GraphQL request
@@ -52,6 +60,27 @@ const Query = {
     // return db.postList.filter((post)=> {
     //   return post.title.toLowerCase().includes(args.query.toLowerCase());
     // });
+  },
+  async post(parent, args, { prisma, request }, info) {
+    const userId = getUserId(request, false);
+    const opArgs = {};
+    if (args.query) {
+      opArgs.where = {
+        id: args.id,
+        OR: [{
+          published: true
+        },
+        {
+          author: {
+            id: userId
+          }
+        }]
+      }
+    }
+    const posts = await prisma.query.posts(opArgs, info);
+    if (posts.length <= 0)
+      throw new Error ("Post not found.");
+    return posts[0];
   },
   comments(parent, args, { db, prisma }, info) {
     const opArgs = {}

@@ -1,11 +1,6 @@
 import { GraphQLServer, PubSub } from 'graphql-yoga';
 import db from './db';
-import Query from './resolvers/Query';
-import Mutation from './resolvers/Mutation';
-import Comment from './resolvers/Comment';
-import Post from './resolvers/Post';
-import User from './resolvers/User';
-import Subscription from './resolvers/Subscription';
+import { resolvers, fragmentReplacements } from './resolvers/index';
 import prisma from './prisma';
 
 // Scalr types = String, Boolean, Int, Float, ID
@@ -16,19 +11,16 @@ const pubsub = new PubSub();
 // We use { db } to decompose parameter
 const servers = new GraphQLServer({
   typeDefs: './src/schema.graphql',
-  resolvers: {
-    Query,
-    Mutation,
-    Subscription,
-    Comment,
-    Post,
-    User
+  resolvers,
+  context(request) {
+    return {
+      db,       // database access
+      pubsub,   // event driven, subscription
+      prisma,   // access to prisma 
+      request   // request object
+    }
   },
-  context: {
-    db,
-    pubsub,
-    prisma
-  }
+  fragmentReplacements
 });
 
 servers.start(()=> {
