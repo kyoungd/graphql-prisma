@@ -1,4 +1,4 @@
-import '@babel/polyfill';         // babel production runtime extra goodies.
+import '@babel/polyfill/noConflict';         // babel production runtime extra goodies.
 import { GraphQLServer, PubSub } from 'graphql-yoga';
 import db from './db';
 import { resolvers, fragmentReplacements } from './resolvers/index';

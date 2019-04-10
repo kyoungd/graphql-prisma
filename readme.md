@@ -184,3 +184,11 @@ import '@babel/@polyfill'
 -- run app on heroku
    "start": "node dist/index.js",
 
+* create app in heroku-cli
+heroku create
+heroku config:set ENV_VAR_NAME=ENV_VAR_VALUE
+# example: heroku config:set PRISMA_ENDPOINT=https://young-kwon-blogging-612f67c38c.herokuapp.com/young-prisma-blog/prod
+git remote -v
+git push heroku
+
+* move sensitive information to environment variables
