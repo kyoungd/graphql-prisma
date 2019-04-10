@@ -189,6 +189,13 @@ heroku create
 heroku config:set ENV_VAR_NAME=ENV_VAR_VALUE
 # example: heroku config:set PRISMA_ENDPOINT=https://young-kwon-blogging-612f67c38c.herokuapp.com/young-prisma-blog/prod
 git remote -v
-git push heroku
+git push heroku master
 
 * move sensitive information to environment variables
+-- set it in a config file
+PRISMA_SECRET=cju02yv7faa2f0890ebmk64mi
+-- in prisma.yml
+secret: ${env:PRISMA_SECRET}
+-- set heroku environment variable
+heroku config:set PRISMA_SECRET=cju02yv7faa2f0890ebmk64mi
+heroku config
