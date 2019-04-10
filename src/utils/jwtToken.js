@@ -8,7 +8,7 @@ const getUserId = (request, requireAuth = true) => {
     : request.connection.context.Authorization);  // subscription
   if (header) {
     const token = header.replace("Bearer ", "");
-    const decoded = jwt.verify(token, config.secret);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     return decoded.userId;
   }
   if (requireAuth)
@@ -18,7 +18,7 @@ const getUserId = (request, requireAuth = true) => {
 }
 
 const makeToken = (userId) => {
-  return jwt.sign({userId}, config.secret, { expires: '30m' });
+  return jwt.sign({userId}, process.env.JWT_SECRET, { expires: '30m' });
 }
 
 const hashPassword = async (password) => {
