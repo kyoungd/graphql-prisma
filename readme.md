@@ -178,3 +178,9 @@ npm install env-cmd@8.0.2
 npm install @babel/polyfill@7.0.0
 -- add to src/index.js
 import '@babel/@polyfill'
+
+-- run app locally
+   "start": "env-cmd ./config/prod.env node dist/index.js",
+-- run app on heroku
+   "start": "node dist/index.js",
+
