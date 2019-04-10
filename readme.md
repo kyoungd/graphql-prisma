@@ -135,3 +135,46 @@ npm install jsonwebtoken@8.3.0
   "Authorization":"Bearer {LOGIN-TOKEN} 
 }
 * Retrieve login token by executing a mutation.loginUser.
+
+
+* PRODUCTION
+https://www.prisma.io/cloud
+Create An Account
+
+Services - A single instance of Prisma.  You can have multiple.
+Servers - Actual container for Prisma server.
+
+- Choose Servers
+[Add Server]
+server name: young-generic-prisma-server
+server description:  my generic prisma server
+
+- create config folder
+- create dev.env and prod.env
+- change deploy statement
+prisma deploy -e ../config/dev.env
+- setup production environment
+prisma login
+prisma deploy -e ../config/prod.env
+- setup prod.env file with new endpoint
+prisma deploy -e ../config/prod.env
+- https://www.prisma.io/cloud
+
+- install heroku cli
+npm install -g heroku
+heroku login
+- update src/index.js - port
+- update prisma.js - env variables (config/dev.env, config/prod.env)
+- install env-cmd
+npm install env-cmd@8.0.2
+  "scripts": {
+    "dev": "env-cmd ./config/dev.env nodemon src/index.js --ext js,graphql --exec babel-node",
+- heroku postbuild (ran by heroku after the build, but before running).
+- src (input folder) dist(output folder)
+  "scripts": {
+    "heroku-postbuild": "babel src --out-dir dist" --copy-files,
+    
+-- install babel/polyfill (run time babel extra we need)
+npm install @babel/polyfill@7.0.0
+-- add to src/index.js
+import '@babel/@polyfill'

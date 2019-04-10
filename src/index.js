@@ -1,3 +1,4 @@
+import '@babel/polyfill';         // babel production runtime extra goodies.
 import { GraphQLServer, PubSub } from 'graphql-yoga';
 import db from './db';
 import { resolvers, fragmentReplacements } from './resolvers/index';
@@ -23,6 +24,7 @@ const servers = new GraphQLServer({
   fragmentReplacements
 });
 
-servers.start(()=> {
+// process.env.PORT - set by heroku
+servers.start({ port: process.env.PORT || 4000 }, () => {
   console.log('the server is up.')
 })
