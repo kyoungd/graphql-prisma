@@ -149,6 +149,21 @@ Servers - Actual container for Prisma server.
 server name: young-generic-prisma-server
 server description:  my generic prisma server
 
+Host
+ec2-23-21-136-232.compute-1.amazonaws.com
+Database
+d3tdjeo0vovcq
+User
+dqjffkfdzbqtcp
+Port
+5432
+Password
+2711bb2f4fbcce91af7090b2862711eae609c623f1adf86d9c4312907414587a
+URI
+postgres://dqjffkfdzbqtcp:2711bb2f4fbcce91af7090b2862711eae609c623f1adf86d9c4312907414587a@ec2-23-21-136-232.compute-1.amazonaws.com:5432/d3tdjeo0vovcq
+Heroku CLI
+heroku pg:psql postgresql-dimensional-24845 --app young-kwon-blogging-612f67c38c
+
 - create config folder
 - create dev.env and prod.env
 - change deploy statement

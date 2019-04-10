@@ -18,7 +18,7 @@ const getUserId = (request, requireAuth = true) => {
 }
 
 const makeToken = (userId) => {
-  return jwt.sign({userId}, process.env.JWT_SECRET, { expires: '30m' });
+  return jwt.sign({userId}, process.env.JWT_SECRET, { expiresIn: '30m' });
 }
 
 const hashPassword = async (password) => {
