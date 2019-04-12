@@ -1,5 +1,4 @@
 import bcrypt from "bcryptjs";
-import config from "../../config";
 import { makeToken, getUserId, hashPassword } from "../utils/jwtToken";
 
 const Mutation = {
@@ -9,11 +8,15 @@ const Mutation = {
         email: args.data.email
         } 
     });
-    if (!users)
-      throw new Error ('username and password does not match');
+    if (!users || users.length <= 0)
+      throw new Error (' * username and password does not match 1');
     const user = users[0];
+    // console.log('*********************************');
+    // console.log(users);
+    // console.log('*********************************');
+    // console.log(args);
+    // console.log('*********************************');
     const isMatch = await bcrypt.compare(args.data.password, user.password);
-    const errMsg = "text"
     if (isMatch) {
       return {
         user:user,
@@ -21,7 +24,7 @@ const Mutation = {
       }
     }
     else
-      throw new Error (errMsg + 'Username and password does not match');
+      throw new Error (errMsg + '* username and password does not match 2');
   },
   async createUser(parent, args, { db, prisma }, info) {
     if (args.data.password.length < 8) {
@@ -83,8 +86,6 @@ const Mutation = {
     if (!postExists)
       throw new Error ("User does not own the post");
     if (!args.data.published) {
-      const isCommentExist = await prisma.exists.comments({where: {post: {id: args.id}}});
-      if (isCommentExist)
         prisma.mutation.deleteManyComments({where: {post: {id: args.id}}});
     }
     return await prisma.mutation.updatePost({where: { id: args.id }, data: args.data}, info)
@@ -108,7 +109,6 @@ const Mutation = {
         id: postId
       }
     });
-    console.log(post);
     if (!post.published)
       throw new Error('Post is not published');
     const userId = getUserId(request);

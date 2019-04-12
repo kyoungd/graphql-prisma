@@ -214,3 +214,30 @@ secret: ${env:PRISMA_SECRET}
 -- set heroku environment variable
 heroku config:set PRISMA_SECRET=cju02yv7faa2f0890ebmk64mi
 heroku config
+
+* create test.env file
+prisma deploy -e ../config/test.env
+
+* install jest
+npm install --save-dev jest@23.5.0
+* create test folder (jest looks for it)
+* file must be named (*.test.js)
+
+* install appollo client as the graphql client
+
+* npm babel-register for globalStartup and globalTeardown.
+*  those two files are not running babel, so you need this tool.
+npm install babel-register@6.26.0
+* create server.js file to instantiate graphql server
+* update package.json to include config environment file
+* create globalStartup and globalteardown.  Use global.httpServer variable to communiate.
+
+* install apollo-boost
+npm install apollo-boost@0.1.14
+npm install graphql@14.0.2
+npm install cross-fetch@2.2.2
+    (https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+
+
+* apollo-boost for subscription.  It does no exist, yet.  Need to write our own.  getClient()
+npm install apollo-client@2.4.2 apollo-cache-inmemory@1.2.10 apollo-link-http@1.5.5 apollo-link-error@1.1.1 apollo-link@1.2.3 apollo-link-ws@1.0.9 apollo-utilities@1.0.21 subscriptions-transport-ws@0.9.15 @babel/polyfill@7.0.0 graphql@0.13.2

@@ -234,3 +234,41 @@ query {
     }
   }
 }
+
+mutation ($data:CreateuserInput!) {
+  createUser (data: $data) {
+    user {
+      id
+    	name
+    	email
+    }
+    token
+  }
+}
+
+{
+  "data": {
+	  "name": "JK Rowlin 6",
+  	"email": "jk6@hp.com",
+  	"password": "onetwothree"
+  }
+}
+
+
+mutation ($data: LoginUserInput!) {
+  loginUser (data: $data) {
+    user {
+      id
+      name
+      email
+    }
+    token
+  }
+}
+
+{
+  "data": {
+    "email": "jk2@hp.com",
+    "password": "onetwothree"
+	}
+}
